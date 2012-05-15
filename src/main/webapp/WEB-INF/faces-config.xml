@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file is not required if you don't need any extra configuration. -->
+<faces-config version="2.0" xmlns="http://java.sun.com/xml/ns/javaee"
+ xmlns:xi="http://www.w3.org/2001/XInclude"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="         http://java.sun.com/xml/ns/javaee         http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
+ <navigation-rule>
+  <display-name>Stage1</display-name>
+  <from-view-id>/queryBuilderForm1.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>next</from-outcome>
+   <to-view-id>/queryBuilderForm2.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+ 
+ <navigation-rule>
+  <display-name>Stage2Next</display-name>
+  <from-view-id>/queryBuilderForm2.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>next</from-outcome>
+   <to-view-id>/submittedQueries.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+ 
+ <navigation-rule>
+  <display-name>Stage2Back</display-name>
+  <from-view-id>/queryBuilderForm2.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>backToForm1</from-outcome>
+   <to-view-id>/queryBuilderForm1.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+ 
+ <navigation-rule>
+  <display-name>queryBuilder</display-name>
+  <from-view-id>/index.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>queryBuilder</from-outcome>
+   <to-view-id>/queryBuilderForm1.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+ 
+ <navigation-rule>
+  <display-name>xqueryBuilder</display-name>
+  <from-view-id>/index.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>xqueryBuilder</from-outcome>
+   <to-view-id>/queryFilter.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+ 
+  <navigation-rule>
+  <display-name>xqueryBuilder</display-name>
+  <from-view-id>/index.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>submittedQueries</from-outcome>
+   <to-view-id>/submittedQueries.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+ <!-- This descriptor activates the JSF 2.0 Servlet 
+ Write your navigation rules here. You are encouraged to use CDI for creating @Named managed beans. -->
+</faces-config>

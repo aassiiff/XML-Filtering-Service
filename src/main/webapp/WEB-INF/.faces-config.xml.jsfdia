@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PROCESS model-entity="JSFProcess">
+ <PROCESS-ITEM NAME="rules:#queryBuilderForm1.xhtml"
+  PATH="/queryBuilderForm1.xhtml" SHAPE="32,17,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules:#queryBuilderForm1.xhtml:0" NAME="item"
+   PATH="/queryBuilderForm1.xhtml" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT ID="next::#queryBuilderForm2.xhtml"
+    NAME="output" PATH="/queryBuilderForm2.xhtml"
+    TARGET="rules:#queryBuilderForm2.xhtml" TITLE="next" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules:#queryBuilderForm2.xhtml"
+  PATH="/queryBuilderForm2.xhtml" SHAPE="240,33,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules:#queryBuilderForm2.xhtml:0" NAME="item"
+   PATH="/queryBuilderForm2.xhtml" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT ID="next::#submittedQueries.xhtml" NAME="output"
+    PATH="/submittedQueries.xhtml"
+    TARGET="rules:#submittedQueries.xhtml" TITLE="next" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+  <PROCESS-ITEM ID="rules:#queryBuilderForm2.xhtml:1" NAME="item1"
+   PATH="/queryBuilderForm2.xhtml" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT ID="backToForm1::#queryBuilderForm1.xhtml"
+    NAME="output" PATH="/queryBuilderForm1.xhtml"
+    TARGET="rules:#queryBuilderForm1.xhtml" TITLE="backToForm1" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules:#index.xhtml" PATH="/index.xhtml"
+  SHAPE="32,129,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules:#index.xhtml:0" NAME="item"
+   PATH="/index.xhtml" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT ID="queryBuilder::#queryBuilderForm1.xhtml"
+    NAME="output" PATH="/queryBuilderForm1.xhtml"
+    TARGET="rules:#queryBuilderForm1.xhtml" TITLE="queryBuilder" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+  <PROCESS-ITEM ID="rules:#index.xhtml:1" NAME="item1"
+   PATH="/index.xhtml" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT ID="xqueryBuilder::#queryFilter.xhtml"
+    NAME="output" PATH="/queryFilter.xhtml"
+    TARGET="rules:#queryFilter.xhtml" TITLE="xqueryBuilder" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+  <PROCESS-ITEM ID="rules:#index.xhtml:2" NAME="item2"
+   PATH="/index.xhtml" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT ID="submittedQueries::#submittedQueries.xhtml"
+    NAME="output" PATH="/submittedQueries.xhtml"
+    TARGET="rules:#submittedQueries.xhtml" TITLE="submittedQueries" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules:#queryFilter.xhtml" PATH="/queryFilter.xhtml"
+  SHAPE="256,145,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#submittedQueries.xhtml"
+  PATH="/submittedQueries.xhtml" SHAPE="288,353,0,0" model-entity="JSFProcessGroup"/>
+</PROCESS>

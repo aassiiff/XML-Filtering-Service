@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:m="http://metawidget.org/faces"
+	template="/WEB-INF/templates/default.xhtml">
+
+    <h:outputStylesheet>
+.pic-normal {
+    width: 120px;
+    border: 2px solid #ACBECE;
+}
+ 
+.wrap1 {
+    width: 190px;
+    height: 130px;
+    float: left;
+}
+</h:outputStylesheet>
+	<ui:define name="content">
+		<h:form>
+		
+		<rich:collapsiblePanel header="Atoms and atomic states" switchType="client" expanded="false">
+			<rich:dataTable var="_returnable" value="#{atomReturnablesProducer.atomReturnablesList}"
+				>
+				<h:column>
+					<f:facet name="header">Name</f:facet>
+               <h:outputFormat value="#{_returnable.name}"/>
+            </h:column>
+				<h:column>
+					<f:facet name="header">Short Description</f:facet>
+					<h:outputLabel value="#{_returnable.shortDescription}" />
+
+				</h:column>
+				<h:column >
+					<f:facet name="header">Unit</f:facet>
+					<h:outputLabel value=" #{_returnable.unit}" />
+            </h:column>
+				<h:column >
+					<f:facet name="header">Type</f:facet>
+               <h:outputLabel value=" #{_returnable.type}" />
+            </h:column>
+				<h:column>
+					<f:facet name="header">Selected</f:facet>
+					<h:selectBooleanCheckbox >
+						<f:selectItem itemValue="selected"/>					
+					</h:selectBooleanCheckbox>	
+				</h:column>
+			</rich:dataTable>
+			</rich:collapsiblePanel>
+			
+			<rich:collapsiblePanel  header="Molecules, their states and quantum numbers" switchType="client" expanded="false">
+			<rich:dataTable var="_returnable" value="#{moleculeReturnablesProducer.moleculeReturnablesList}"
+				>
+				<h:column>
+					<f:facet name="header">Name</f:facet>
+               <h:outputFormat value="#{_returnable.name}"/>
+            </h:column>
+				<h:column>
+					<f:facet name="header">Short Description</f:facet>
+					<h:outputLabel value="#{_returnable.shortDescription}" />
+
+				</h:column>
+				<h:column >
+					<f:facet name="header">Unit</f:facet>
+					<h:outputLabel value=" #{_returnable.unit}" />
+            </h:column>
+				<h:column >
+					<f:facet name="header">Type</f:facet>
+               <h:outputLabel value=" #{_returnable.type}" />
+            </h:column>
+				<h:column>
+					<f:facet name="header">Selected</f:facet>
+					<h:selectBooleanCheckbox >
+						<f:selectItem itemValue="selected"/>					
+					</h:selectBooleanCheckbox>	
+				</h:column>
+			</rich:dataTable>
+			</rich:collapsiblePanel>
+			
+			<rich:collapsiblePanel  header="Solids and Particles" switchType="client" expanded="false">
+			<rich:dataTable var="_returnable" value="#{solidReturnablesProducer.solidReturnablesList}"
+				>
+				<h:column>
+					<f:facet name="header">Name</f:facet>
+               <h:outputFormat value="#{_returnable.name}"/>
+            </h:column>
+				<h:column>
+					<f:facet name="header">Short Description</f:facet>
+					<h:outputLabel value="#{_returnable.shortDescription}" />
+
+				</h:column>
+				<h:column >
+					<f:facet name="header">Unit</f:facet>
+					<h:outputLabel value=" #{_returnable.unit}" />
+            </h:column>
+				<h:column >
+					<f:facet name="header">Type</f:facet>
+               <h:outputLabel value=" #{_returnable.type}" />
+            </h:column>
+				<h:column>
+					<f:facet name="header">Selected</f:facet>
+					<h:selectBooleanCheckbox >
+						<f:selectItem itemValue="selected"/>					
+					</h:selectBooleanCheckbox>	
+				</h:column>
+			</rich:dataTable>
+			</rich:collapsiblePanel>
+			
+			
+			<rich:collapsiblePanel  header="Processes" switchType="client" expanded="false">
+			<rich:dataTable var="_returnable" value="#{processReturnablesProducer.processReturnablesList}"
+				>
+				<h:column>
+					<f:facet name="header">Name</f:facet>
+               <h:outputFormat value="#{_returnable.name}"/>
+            </h:column>
+				<h:column>
+					<f:facet name="header">Short Description</f:facet>
+					<h:outputLabel value="#{_returnable.shortDescription}" />
+
+				</h:column>
+				<h:column >
+					<f:facet name="header">Unit</f:facet>
+					<h:outputLabel value=" #{_returnable.unit}" />
+            </h:column>
+				<h:column >
+					<f:facet name="header">Type</f:facet>
+               <h:outputLabel value=" #{_returnable.type}" />
+            </h:column>
+				<h:column>
+					<f:facet name="header">Selected</f:facet>
+					<h:selectBooleanCheckbox >
+						<f:selectItem itemValue="selected"/>					
+					</h:selectBooleanCheckbox>	
+				</h:column>
+			</rich:dataTable>
+			</rich:collapsiblePanel>
+			
+			<rich:collapsiblePanel  header="Environments, Functions, Methods and Sources" switchType="client" expanded="false">
+			<rich:dataTable var="_returnable" value="#{environmentReturnablesProducer.environmentReturnablesList}"
+				>
+				<h:column>
+					<f:facet name="header">Name</f:facet>
+               <h:outputFormat value="#{_returnable.name}"/>
+            </h:column>
+				<h:column>
+					<f:facet name="header">Short Description</f:facet>
+					<h:outputLabel value="#{_returnable.shortDescription}" />
+
+				</h:column>
+				<h:column >
+					<f:facet name="header">Unit</f:facet>
+					<h:outputLabel value=" #{_returnable.unit}" />
+            </h:column>
+				<h:column >
+					<f:facet name="header">Type</f:facet>
+               <h:outputLabel value=" #{_returnable.type}" />
+            </h:column>
+				<h:column>
+					<f:facet name="header">Selected</f:facet>
+					<h:selectBooleanCheckbox >
+						<f:selectItem itemValue="selected"/>					
+					</h:selectBooleanCheckbox>	
+				</h:column>
+			</rich:dataTable>
+			</rich:collapsiblePanel>
+			<h:commandButton id="select" value="Select" />
+		</h:form>
+	</ui:define>
+
+</ui:composition>

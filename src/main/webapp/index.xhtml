@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	template="/WEB-INF/templates/default.xhtml">
+	<ui:define name="content">
+	
+		<div id="topbar">
+			    <div id="topnav">
+			      <ul>
+			        <li class="active" onclick="removeClass(this)"><a href="index.jsf">Home</a></li>
+			        <li onclick="removeClass(this)"><a href="queryBuilderForm1.jsf">Query Builder</a></li>
+			        <li onclick="removeClass(this)"><a href="submittedQueries.jsf">Submitted Queries</a></li>        
+			        <li onclick="removeClass(this)"><a href="queryFilter.jsf">XQuery Form</a></li>
+			      </ul>
+			    </div>
+			    <br class="clear" />
+			  </div>
+		<br /> <br />
+	
+	
+		<h1>XSAMS Filtering Service</h1>
+
+		<p>XSAMS filtering Service let you upload multiple XSAMS documents
+			and run XQueries collectively on uploaded documents.</p>
+
+		<h2>Uploaded Files</h2>
+
+		<h:form>
+			<h:commandButton value="Upload XSAMS">
+				<rich:componentControl target="popup" operation="show" />
+			</h:commandButton>
+		</h:form>
+
+		<h:panelGroup id="fileListPanel">
+			<h:panelGroup rendered="#{empty fileUploadBean.uploadedFiles}"
+				id="emptyFileList">
+				<em>No File yet uploaded #{fileUploadBean.size}</em>
+			</h:panelGroup>
+			<h:dataTable var="_files" value="#{fileUploadBean.uploadedFiles}"
+				id="fileListDataTable" border="1"
+				rendered="#{not empty fileUploadBean.uploadedFiles}">
+				<h:column>
+					<f:facet name="header">File Name</f:facet>
+                #{_files.fileName}
+            </h:column>
+				<h:column>
+					<f:facet name="header">File Size</f:facet>
+                #{_files.fileSize} kb
+            </h:column>
+
+				<h:column>
+					<f:facet name="header">Last Accessed</f:facet>
+                #{_files.lastAccessed}
+            </h:column>
+            <h:column>
+					<f:facet name="header">Status</f:facet>
+                #{_files.status}
+            </h:column>
+				<h:column>
+					<f:facet name="header">Delete</f:facet>
+					<h:form>
+						<h:commandButton value="Delete"
+							action="#{fileUploadBean.initSelectedXSAMS(_files.index)}"
+							render="fileListPanel">
+						</h:commandButton>
+					</h:form>
+				</h:column>
+			</h:dataTable>
+		</h:panelGroup>
+	</ui:define>
+</ui:composition>

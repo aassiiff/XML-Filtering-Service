@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:m="http://metawidget.org/faces"
+	template="/WEB-INF/templates/default.xhtml">
+
+	<ui:define name="content">
+		<div id="topbar">
+			    <div id="topnav">
+			      <ul>
+			        <li onclick="removeClass(this)"><a href="index.jsf">Home</a></li>
+			        <li class="active" onclick="removeClass(this)"><a href="queryBuilderForm1.jsf">Query Builder</a></li>
+			        <li onclick="removeClass(this)"><a href="submittedQueries.jsf">Submitted Queries</a></li>        
+			        <li onclick="removeClass(this)"><a href="queryFilter.jsf">XQuery Form</a></li>
+			      </ul>
+			    </div>
+			    <br class="clear" />
+			  </div>
+		<!--  -->
+		<h:form>
+			<rich:dataTable var="_returnable" value="#{selectedReturnablesList}" style="width: 890px">
+				<h:column>
+					<f:facet name="header">Name</f:facet>
+                #{_returnable.name}
+            </h:column>
+				<h:column>
+					<f:facet name="header">Short Description</f:facet>
+					<h:outputLabel value="#{_returnable.shortDescription}" />
+
+				</h:column>
+				<h:column style="width: 50px">
+					<f:facet name="header">Unit</f:facet>
+                #{_returnable.unit}
+            </h:column>
+            <!--  
+            <h:column>
+					<f:facet name="header">XQuery Path</f:facet>
+					<h:outputLabel value="#{_returnable.xQueryMapping}" />
+				</h:column>
+				-->
+				<h:column>
+					<f:facet name="header">Header Name</f:facet>
+					<m:metawidget value="#{_returnable.columnName}" style="width: 280px"/>
+				</h:column>
+				<h:column>
+					<f:facet name="header">Column Order</f:facet>
+					<m:metawidget value="#{_returnable.columnOrder}" style="width: 50px"/>
+				</h:column>
+				<h:column>
+					<f:facet name="header">Remove</f:facet>
+					<m:metawidget value="#{_returnable.removed}"/>	
+				</h:column>
+			</rich:dataTable>
+			<br/>
+			<h:commandButton id="back" value="Back" style="float:left"
+				action="backToForm1"/>
+				
+			<h:commandButton id="select" value="Execute Query" style="float:right"
+				action="#{queryFilterController.executeQueryFromSelectable(selectedReturnablesList)}"/>
+		</h:form>
+
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:m="http://metawidget.org/faces"
+	template="/WEB-INF/templates/default.xhtml">
+
+	<ui:define name="content">
+		<!--  -->
+		<h:form>
+			<rich:dataTable var="_returnable" value="#{returnables}">
+				<h:column>
+					<f:facet name="header">Name</f:facet>
+                #{_returnable.name}
+            </h:column>
+				<h:column>
+					<f:facet name="header">Short Description</f:facet>
+					<h:outputLabel value="#{_returnable.shortDescription}" />
+
+				</h:column>
+				<h:column>
+					<f:facet name="header">Unit</f:facet>
+                #{_returnable.unit}
+            </h:column>
+            <h:column>
+					<f:facet name="header">XQuery Path</f:facet>
+					<h:outputLabel value="#{_returnable.xQueryMapping}" />
+				</h:column>
+				
+			</rich:dataTable>
+			<h:commandButton id="select" value="Select" 
+				/>
+		</h:form>
+
+
+	</ui:define>
+
+</ui:composition>

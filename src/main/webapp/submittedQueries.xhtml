@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/templates/default.xhtml">
+
+	<ui:define name="content">
+
+		<div id="topbar">
+			<div id="topnav">
+				<ul>
+					<li onclick="removeClass(this)"><a href="index.jsf">Home</a></li>
+					<li onclick="removeClass(this)"><a
+						href="queryBuilderForm1.jsf">Query Builder</a></li>
+					<li class="active" onclick="removeClass(this)"><a
+						href="submittedQueries.jsf">Submitted Queries</a></li>
+					<li onclick="removeClass(this)"><a href="queryFilter.jsf">XQuery
+							Form</a></li>
+				</ul>
+			</div>
+			<br class="clear" />
+		</div>
+		<br />
+		<br />
+		<rich:panel>
+			<f:facet name="header">
+        	Submitted queries based on selected returnables
+        </f:facet>
+
+			<h:panelGroup id="submittedQuriesListPanel">
+				<h:panelGroup
+					rendered="#{empty queryFilterController.submittedQuereis}"
+					id="emptyQuereisList">
+					<em>No query yet submitted</em>
+				</h:panelGroup>
+
+
+				<h:dataTable var="_query" style="width: 860px"
+					value="#{queryFilterController.submittedQuereis}"
+					id="queryListDataTable" border="1"
+					rendered="#{not empty queryFilterController.submittedQuereis}">
+					<h:column>
+						<f:facet name="header">Query Index</f:facet>
+		                #{_query.indexInList}
+		            </h:column>
+					<h:column>
+						<f:facet name="header">Query ID</f:facet>
+		                #{_query.queryID}
+		            </h:column>
+					<!--  
+					<h:column>
+						<f:facet name="header">Query</f:facet>
+		                #{_query.query}
+		            </h:column>
+		            -->
+					<h:column>
+						<f:facet name="header">Returnables</f:facet>
+						<h:dataTable var="_returnables"
+							value="#{_query.selectedReturnablesList}"
+							id="returnablesListDataTable" border="0">
+							<h:column>
+				                #{_returnables.columnName}
+				            </h:column>
+						</h:dataTable>
+					</h:column>
+					<h:column>
+						<f:facet name="header">File Size</f:facet>
+						<h:form>
+							<a4j:poll id="pollSize" interval="500"
+								enabled="#{not _query.queryStatus}"
+								render="pollSize, fileSizePanel"></a4j:poll>
+						</h:form>
+						<h:panelGrid columns="1" id="fileSizePanel">
+							<h:outputLabel value="#{_query.csvFileSize} kb"
+								rendered="#{_query.queryStatus}" id="csvFileSize" />
+						</h:panelGrid>
+
+					</h:column>
+					<h:column>
+						<f:facet name="header">Download</f:facet>
+						<div align="center">
+
+							<h:form>
+								<a4j:poll id="poll" interval="500"
+									enabled="#{not _query.queryStatus}"
+									render="poll, downloadStatus, downloadStatusPanel"></a4j:poll>
+							</h:form>
+
+							<h:form>
+								<h:panelGrid columns="1" id="downloadStatusPanel">
+									<h:outputLink value="fileServlet?fileName=#{_query.csvFile}"
+										rendered="#{_query.queryStatus}" id="downloadStatus">
+										<h:outputText value="CSV" />
+									</h:outputLink>
+								</h:panelGrid>
+							</h:form>
+						</div>
+					</h:column>
+
+				</h:dataTable>
+			</h:panelGroup>
+		</rich:panel>
+
+
+	</ui:define>
+</ui:composition>

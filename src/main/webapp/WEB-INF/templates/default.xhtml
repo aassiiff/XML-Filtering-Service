@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head>
+        <title>XSAMS Filtering Service</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <h:outputStylesheet name="css/screen.css"/>
+        <h:outputScript library="js" name="script.js" />
+    </h:head>
+    <h:body>
+    	<ui:include src="/popup/fileUploadPopup.xhtml"> </ui:include>
+    	<ui:include src="/popup/deleteXMLFilePopup.xhtml"> </ui:include>
+    
+        <div id="container">  
+        	  
+            <div id="content">
+                
+                <ui:insert name="content">
+                    [Template content will be inserted here]
+                </ui:insert>
+            </div>
+            <div id="footer">
+                <h:graphicImage value="/resources/gfx/vamdc_partners_footer.jpg" alt="VAMDC Footer" width="100%"/>
+                
+            </div>
+        </div>
+    </h:body>
+</html>

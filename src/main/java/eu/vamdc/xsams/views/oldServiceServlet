@@ -1,0 +1,241 @@
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1160275330749579717L;
+
+	@Inject
+	@UploadedXSAMSContainer
+	private ArrayList<UploadedXSAMS> uploadedFiles /*uploadedXSAMS*/;
+	
+	@Inject
+	@Category("vamdc-xml-db-consumer-service")
+	protected Logger log;
+	
+
+	@Override
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws RequestException, IOException{
+
+		HttpSession session = request.getSession();
+		String sessionid = request.getPathInfo();
+		String sessionID = session.getId();
+		System.out.println(sessionID + " : " + sessionid);
+		
+		if (!request.isRequestedSessionIdFromCookie( )) {
+			System.out.println("Session is from cookies");
+		} else {
+			System.out.println("Session is from URL");
+		}
+		
+		DownloadManager downloadManager;
+		if ("application/x-www-form-urlencoded"
+				.equals(request.getContentType())) {
+			log.info("Handling application/x-www-form-urlencoded");
+			URL[] urls = getUrl(request);
+			
+			log.info("Initializing DownloadManager: " + uploadedFiles.isEmpty());
+			downloadManager = new DownloadManager(urls, uploadedFiles);
+			
+			log.info("Invoking DownloadManager");
+			
+			Thread thread = new Thread(downloadManager);
+			
+			thread.run();
+			
+			log.info("Redirection committed.");
+			// + request.getLocalAddr()
+			String site = /*"http://localhost"  + ":" + request.getLocalPort()  + */request.getContextPath() + "/";
+			
+			response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+	        response.setHeader("Location", response.encodeRedirectURL(site));
+			
+		} else if ("multipart/form-data"
+				.equals(request.getContentType())){
+			log.info("Handling multipart");
+			try {
+				ServletFileUpload upload = new ServletFileUpload();
+				FileItemIterator iter = upload.getItemIterator(request);
+				boolean cached = false;
+				while (iter.hasNext()) {
+					FileItemStream item = iter.next();
+					String name = item.getFieldName();
+					if (name.equals("url") && item.isFormField()) {
+						
+						// String key = uploadFromUrl(item);
+						// redirect(request, key, response);
+					}
+					InputStream stream = item.openStream();
+					if (item.isFormField()) {
+						log.info("Form field " + name + " with value "
+								+ Streams.asString(stream) + " detected.");
+					} else {
+						log.info("File field " + name + " with file name "
+								+ item.getName() + " detected.");					
+					}
+					stream.close();
+				}
+			} catch (FileUploadException e) {
+				throw new RequestException(e);
+			}
+		} else {
+			String site = /*"http://localhost"  + ":" + request.getLocalPort()  + */request.getContextPath() + "/";
+			response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+	        response.setHeader("Location", response.encodeRedirectURL(site));
+		}
+	}
+
+	@Override
+	public void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, RequestException{
+		
+		if ("application/x-www-form-urlencoded"
+				.equals(request.getContentType())) {
+			doGet(request, response);
+			
+		} else {
+			log.info("Handling multipart");
+			
+				doGet(request, response);
+			
+		}
+	}
+
+	/**
+	 * Initializes the map of cached data.
+	 */
+	@Override
+	public void init() {
+		/*
+		cache = new DataCache();
+		getServletContext().setAttribute(DataCache.CACHE_ATTRIBUTE, cache);
+		*/
+	}
+
+	/**
+	 * Destroys the data cache, deleting the data.
+	 */
+	@Override
+	public void destroy() {
+		try {
+			/*
+			getServletContext().removeAttribute(DataCache.CACHE_ATTRIBUTE);
+			cache.empty();
+			cache = null;
+*/
+		} catch (Exception e) {
+			log.error("Failed to delete the data cache", e);
+		}
+	}
+
+	/**
+	 * Supplies the value of a parameter, applying some checks.
+	 * 
+	 * @param request
+	 *            The HTTP request containing the parameter.
+	 * @param name
+	 *            The name of the parameter
+	 * @return The value of the parameter, stripped of leading and trailing
+	 *         white space.
+	 * @throws RequestException
+	 *             If the parameter is not present in the request.
+	 * @throws RequestException
+	 *             If the parameter's value is an empty string.
+	 */
+	@SuppressWarnings("unused")
+	private String getParameter(HttpServletRequest request, String name)
+			throws RequestException {
+		String value = request.getParameter(name);
+		if (value == null) {
+			return null;
+		} else {
+			String trimmedValue = value.trim();
+			if (trimmedValue.length() == 0) {
+				throw new RequestException("Parameter " + name + " is empty");
+			} else {
+				return trimmedValue;
+			}
+		}
+	}
+
+	private URL[] getUrl(HttpServletRequest request) throws RequestException {
+		String[] values = request.getParameterValues("url");
+		URL[] urls = null;
+		if (values == null) {
+			throw new RequestException(
+					"Please set the url parameter or upload a file");
+		} else {
+			urls = new URL[values.length];
+			for (int i = 0; i < values.length; i++) {
+				String value = values[i].trim();
+				try {
+					URL u = new URL(value);
+					urls[i] = u;
+					log.info("Accepted URL " + u
+							+ " as a data source");
+
+				} catch (MalformedURLException e) {
+					throw new RequestException("'" + value
+							+ "' is not a valid URL");
+				}
+			}
+
+		}
+		return urls;
+	}
+
+	private void redirect(HttpServletRequest request, String key,
+			HttpServletResponse response) {
+		response.setHeader("Location",
+				Locations.getStateListLocation(request, key));
+		response.setStatus(HttpServletResponse.SC_SEE_OTHER);
+	}
+
+	/**
+	 * Uploads a data set to the cache where the URL is given in the request.
+	 * 
+	 * @param item
+	 *            The request fragment holding the URL.
+	 * @return The key for the cached data.
+	 * @throws RequestException
+	 *             If the data cannot be uploaded.
+	 */
+	/*
+	private String uploadFromUrl(FileItemStream item) throws RequestException {
+		try {
+			InputStream i = item.openStream();
+			try {
+				String url = Streams.asString(i);
+				URL u = new URL(url);
+				return cache.put(u);
+			} finally {
+				i.close();
+			}
+		} catch (Exception e) {
+			throw new RequestException("Can't upload from parameter 'url'", e);
+		}
+	}
+*/
+	/**
+	 * Uploads a data set to the cache where the data are given in the request.
+	 * 
+	 * @param item
+	 *            The request fragment holding the data.
+	 * @return The key for the cached data.
+	 * @throws RequestException
+	 *             If the data cannot be uploaded.
+	 */
+	/*
+	private String uploadFromRequestBody(FileItemStream item)
+			throws RequestException {
+		try {
+			InputStream i = item.openStream();
+			try {
+				//return cache.put(i);
+			} finally {
+				i.close();
+			}
+		} catch (Exception e) {
+			throw new RequestException("Can't upload from request body", e);
+		}
+	}
+*/
