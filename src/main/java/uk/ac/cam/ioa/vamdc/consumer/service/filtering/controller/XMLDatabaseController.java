@@ -31,11 +31,20 @@ public class XMLDatabaseController implements Serializable {
 	@Inject
 	@XMLDatabase
 	private BerkeleyXMLDatabase xmlDatabase;
+	
+	public XMLDatabaseController(){
+		//log.info("XMLDatabaseController()");
+	}
+	/*
+	public XMLDatabaseController(BerkeleyXMLDatabase xmlDatabase){
+		this.xmlDatabase = xmlDatabase;
+	}
+	*/
 
 
 	public void loadXMLFile(String pathToFileValue, String fileValue) {
 		//
-		log.debug("loadXMLFile: " + pathToFileValue + "  " +  fileValue);
+		log.info("loadXMLFile: " + pathToFileValue + "  " +  fileValue);
 		
 		xmlDatabase.loadXMLFileInContainer(pathToFileValue, fileValue);
 		/**/
@@ -44,7 +53,6 @@ public class XMLDatabaseController implements Serializable {
 			
 			//xmlDatabase.doQuery("//*/Species/Atoms/Atom/ChemicalElement/ElementSymbol");
 		} catch (Throwable e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
 	}

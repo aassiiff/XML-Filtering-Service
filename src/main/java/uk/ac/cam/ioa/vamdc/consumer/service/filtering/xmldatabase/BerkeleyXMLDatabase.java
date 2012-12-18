@@ -30,6 +30,7 @@ public class BerkeleyXMLDatabase implements Serializable {
 
 	private void xmlManager(String containerPath) {
 
+		System.out.println("xmlManager(String containerPath)");
 		File path2DbEnv = new File(containerPath);
 		try {
 			env = XMLDatabaseEnvironment.createEnvironment(path2DbEnv);
@@ -58,6 +59,7 @@ public class BerkeleyXMLDatabase implements Serializable {
 		} catch (Exception exp) {
 			exp.printStackTrace();
 		}
+		System.out.println("XML Container Called");
 		return openedContainer;
 	}
 
@@ -65,6 +67,7 @@ public class BerkeleyXMLDatabase implements Serializable {
 		System.out.println(pathToFileValue + ":  " + fileValue);
 		try {
 			/* */
+			if(theMgr != null){
 			XmlInputStream inputSteam = theMgr
 					.createLocalFileInputStream(pathToFileValue + fileValue);
 
@@ -72,10 +75,25 @@ public class BerkeleyXMLDatabase implements Serializable {
 					XmlDocumentConfig.DEFAULT);
 
 			System.out.println("Added " + fileValue + " to container "
-					+ openedContainer.getName() + "\n");
+					+ openedContainer.getName() + " : " + openedContainer.getNumDocuments() + "\n");		
+			System.out.println(this.toString());
+			
+			} else {
+				System.out.println("The Manager is null");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void loadXMLFileInContainer(String pathToFileValue, String fileValue, String containerPath,
+			String databaseName) {
+		if(theMgr == null){
+			createXMLDatabase(containerPath, databaseName);
+		}
+		
+		loadXMLFileInContainer(pathToFileValue, fileValue);
+		
 	}
 
 	public void deleteXMLFile(String fileName) {

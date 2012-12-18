@@ -1,0 +1,55 @@
+@SuppressWarnings("unchecked")
+		List<MyData> dataHolderTemp = (List<MyData>) session.getAttribute("dataHolder");
+		if(dataHolderTemp != null){
+			System.out.println("dataHolderTemp.size(): " + dataHolderTemp.size());
+			testController.setLocalDataHolder(dataHolderTemp);
+		}
+		else {
+			System.out.println("testControllerTemp is null");
+		}
+
+		String key1 = request.getParameter("key1");
+		String key2 = request.getParameter("key2");
+		String key3 = request.getParameter("key3");
+
+		testController.setSessionId(session.getId());
+		
+		testController.doNothing();
+
+		if(key1 != null  && key2 != null && key3 != null){
+			System.out.println(key1 + "  " + key2 + "  " + key3);
+		}
+
+		if (key1 == null) {
+			key1 = "key1 for URL1";
+		}
+
+		if (key2 == null) {
+			key2 = "key2 for URL2";
+		}
+		
+		if (key3 == null) {
+			key3 = "key3 for URL3";
+		}
+		
+		testController.addData(key1, key2, key3);
+
+		//System.out.println(key1 + "  " + key2);
+
+		session.setAttribute("key1", key1);
+		session.setAttribute("key2", key2);
+		session.setAttribute("key3", key3);
+
+		session.setAttribute("dataHolder", testController.getLocalDataHolder());
+		System.out.println("testController.getLocalDataHolder().size(): " + testController.getLocalDataHolder().size());
+
+		System.out.print("ServiceServlet called: ");
+		System.out.println(session.getId());
+		response.setContentType("text/plain");
+		PrintWriter out = response.getWriter();
+		out.write(session.getId());
+
+		String site = "http://" + request.getLocalAddr() + ":"
+				+ request.getLocalPort() + request.getContextPath() + "/";
+		
+		System.out.println(": " + response.encodeRedirectURL(site));

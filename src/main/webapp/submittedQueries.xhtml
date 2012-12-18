@@ -81,6 +81,28 @@
 
 					</h:column>
 					<h:column>
+						<f:facet name="header">View</f:facet>
+						
+						<h:form>
+								<a4j:poll id="poll1" interval="500"
+									enabled="#{not _query.queryStatus}"
+									render="poll1, viewStatus, viewStatusPanel"></a4j:poll>
+							</h:form>
+						<div align="center">
+							<h:form>
+								<h:panelGrid columns="1" id="viewStatusPanel">
+									<h:outputLink
+										value="viewServlet?fileName=#{_query.queryID}.html"
+										rendered="#{_query.queryStatus}" target="_blank"
+										onclick="window.open(viewServlet?fileName=#{_query.queryID}.html)"
+										id="viewStatus">
+										<h:outputText value="View" />
+									</h:outputLink>
+								</h:panelGrid>
+							</h:form>
+						</div>
+					</h:column>
+					<h:column>
 						<f:facet name="header">Download</f:facet>
 						<div align="center">
 

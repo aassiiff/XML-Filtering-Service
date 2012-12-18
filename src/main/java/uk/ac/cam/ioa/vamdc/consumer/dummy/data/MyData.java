@@ -28,7 +28,4 @@ public class MyData {
 	public void setUrl3(String url3) {
 		this.url3 = url3;
 	}
-	
-	
-
 }

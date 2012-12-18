@@ -8,6 +8,7 @@ import uk.ac.cam.ioa.vamdc.consumer.service.filtering.events.XSAMSUploadEvent;
 
 public class FileUploadObserver {
 	
+	
 	@Inject
 	private XMLDatabaseController xmlDatabaseController;
 	

@@ -27,6 +27,7 @@ public class BeanManagerUtility {
         BeanManager bm = getBeanManager();
         Bean bean = bm.getBeans(name).iterator().next();
         
+        //bm.
 		
 		CreationalContext ctx = bm.createCreationalContext(bean); // could be inlined below
         Object o = bm.getReference(bean, bean.getClass(), ctx); // could be inlined with return

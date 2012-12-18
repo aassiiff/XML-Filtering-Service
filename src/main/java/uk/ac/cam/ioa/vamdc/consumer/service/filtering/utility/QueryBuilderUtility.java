@@ -16,6 +16,18 @@ import uk.ac.cam.ioa.vamdc.consumer.service.filtering.model.SelectedReturnable;
 public class QueryBuilderUtility {
 
 	String flworQuery = "";
+	
+	String flworQueryHtml = "";
+	
+	
+
+	public String getFlworQueryHtml() {
+		return flworQueryHtml;
+	}
+
+	public void setFlworQueryHtml(String flworQueryHtml) {
+		this.flworQueryHtml = flworQueryHtml;
+	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public String buildQuery(List<SelectedReturnable> selectedReturnablesList,
@@ -47,12 +59,17 @@ public class QueryBuilderUtility {
 		}
 		System.out.println();
 
+		ArrayList<String> returnables = new ArrayList<String>();
 		ArrayList<String> queries = new ArrayList<String>();
-		ArrayList<String> headers = new ArrayList<String>();
-
-		HashMap<String, String> xQueryHashMap = new HashMap<String, String>();
-
+		
 		Set<String> columnNames = new HashSet<String>();
+		
+		//headers are not used
+		//ArrayList<String> headers = new ArrayList<String>();
+
+		// xQueryHashMap is also not used
+		//HashMap<String, String> xQueryHashMap = new HashMap<String, String>();
+
 		Iterator<SelectedReturnable> iterator = selectedReturnablesList
 				.iterator();
 		while (iterator.hasNext()) {
@@ -61,10 +78,12 @@ public class QueryBuilderUtility {
 				if (tempReturnable.getxQueryMapping() != null)
 					if (tempReturnable.getxQueryMapping().trim().length() > 0) {
 						queries.add(tempReturnable.getxQueryMapping());
-						headers.add(tempReturnable.getColumnName());
+						returnables.add(tempReturnable.getName());
+						//headers.add(tempReturnable.getColumnName());
 						columnNames.add(tempReturnable.getName());
+						/*
 						xQueryHashMap.put(tempReturnable.getName(),
-								tempReturnable.getxQueryMapping());
+								tempReturnable.getxQueryMapping()); */
 						System.out.println(tempReturnable.getName() + " "
 								+ tempReturnable.getColumnName() + " "
 								+ tempReturnable.isRemoved());
@@ -87,19 +106,20 @@ public class QueryBuilderUtility {
 
 			if (upperRef && lowerRef) {
 				System.out.println("both upperRef && lowerRef");
-				flworQuery = atomRadiativeQueryBoth(xQueryHashMap, databaseName);
+				flworQuery = atomRadiativeQueryBoth(
+						/* xQueryHashMap */returnables, queries, databaseName);
 			} else if (upperRef && !lowerRef) {
 				System.out.println("only upperRef");
-				flworQuery = atomRadiativeQuery(xQueryHashMap, databaseName,
-						upperRef);
+				flworQuery = atomRadiativeQuery(/* xQueryHashMap */returnables,
+						queries, databaseName, upperRef);
 			} else if (!upperRef && lowerRef) {
 				System.out.println("only lowerRef");
-				flworQuery = atomRadiativeQuery(xQueryHashMap, databaseName,
-						upperRef);
+				flworQuery = atomRadiativeQuery(/* xQueryHashMap */returnables,
+						queries, databaseName, upperRef);
 			} else if (!upperRef && !lowerRef) {
 				System.out.println("neither upperRef nor lowerRef");
-				flworQuery = atomRadiativeQuery(xQueryHashMap, databaseName,
-						upperRef);
+				flworQuery = atomRadiativeQuery(/* xQueryHashMap */returnables,
+						queries, databaseName, upperRef);
 			}
 		}
 
@@ -108,9 +128,13 @@ public class QueryBuilderUtility {
 		return flworQuery;
 	}
 
+	// valuesArray is the XQuery Mapping part 
+	// let $Kappa \:\= $xsams/Isotope/Ion/AtomicState[@stateID\=$stateID]/AtomicQuantumNumbers/Kappa \n
 	public String atomOnlyQuery(ArrayList<String> valuesArray,
 			String databaseName) {
-		String returnVar[] = new String[valuesArray.size()];
+		//java.util.Map<String, Integer> temList = new HashMap<String, Integer>();
+
+		ArrayList<String> returnVar = new ArrayList<String>();
 		flworQuery = "";
 
 		flworQuery = flworQuery + " for $xsams in collection('" + databaseName
@@ -120,15 +144,19 @@ public class QueryBuilderUtility {
 
 		for (int i = 0; i < valuesArray.size(); i++) {
 			flworQuery = flworQuery + valuesArray.get(i);
+			
+			// index of $
 			int index = valuesArray.get(i).indexOf("$");
+			// index of first space after $
 			int index2 = valuesArray.get(i).indexOf(" ", index);
 
-			returnVar[i] = valuesArray.get(i).substring(index, index2);
+			// returns $Kappa
+			returnVar.add(valuesArray.get(i).substring(index, index2));
 
-			System.out.println(valuesArray.get(i).substring(index, index2));
+			//System.out.println(valuesArray.get(i).substring(index, index2));
 
 		}
-
+/*
 		String returnStatement = "return concat(";
 
 		for (int i = 0; i < returnVar.length; i++) {
@@ -141,18 +169,82 @@ public class QueryBuilderUtility {
 
 		returnStatement = returnStatement + ")";
 		flworQuery = flworQuery + returnStatement;
+		*/
+		finalizeFlworQuery(returnVar);
 
 		return flworQuery;
 
 	}
+	
+	private void finalizeFlworQuery(ArrayList<String> returnVar){
+		// should be called before finalizing the flworQuery
+		finalizeFlworQueryHTML(returnVar);
+		
+		String returnStatement = "return concat(";
+		
+		for (int i = 0; i < returnVar.size(); i++) {
+			if (i == returnVar.size() - 1) {
+				returnStatement = returnStatement + returnVar.get(i);
+			} else {
+				returnStatement = returnStatement + returnVar.get(i)
+						+ ", \",\", ";
+			}
+		}
 
-	public String atomRadiativeQuery(
-			HashMap<String, String> XQueryMappingArray, String databaseName,
-			boolean upperState) {
+		returnStatement = returnStatement + ")";
+		flworQuery = flworQuery + returnStatement;
+		
+	}
+	
+	private void finalizeFlworQueryHTML(ArrayList<String> returnVar){
+		flworQueryHtml = flworQuery;
+		String returnStatement = "return concat(";
 
-		Object[] keysArray = XQueryMappingArray.keySet().toArray();
-		Object[] valuesArray = XQueryMappingArray.values().toArray();
+		for (int i = 0; i < returnVar.size(); i++) {
+			if (i == returnVar.size() - 1) {
+				returnStatement = returnStatement + returnVar.get(i);
+			} else {
+				returnStatement = returnStatement + returnVar.get(i)
+						+ ", \",\", ";
+			}
+		}
 
+		returnStatement = returnStatement + ")";
+		flworQueryHtml = flworQueryHtml + returnStatement;
+		
+	}
+
+	private void parseFlworQuery(String flworQueryValue,
+			ArrayList<String> forQuery, ArrayList<String> letQuery,
+			ArrayList<String> returnVar) {
+
+		if (flworQueryValue.trim().startsWith("for")) {
+			forQuery.add(flworQueryValue);
+		} else if (flworQueryValue.trim().startsWith("let")) {
+			letQuery.add(flworQueryValue);
+		}
+
+		int index = flworQueryValue.toString().indexOf("$");
+		int index2 = flworQueryValue.toString().indexOf(" ", index);
+
+		returnVar.add(flworQueryValue.toString().substring(index, index2));
+
+	}
+
+	public String atomRadiativeQuery(/*
+									 * HashMap<String, String>
+									 * XQueryMappingArray
+									 */ArrayList<String> returnables,
+			ArrayList<String> queries, String databaseName, boolean upperState) {
+
+		Object[] keysArray = /* XQueryMappingArray.keySet() */returnables
+				.toArray();
+		Object[] valuesArray = /* XQueryMappingArray.values() */queries
+				.toArray();
+
+		for (int i = 0; i < keysArray.length; i++) {
+			System.out.println(keysArray[i] + "\t" + valuesArray[i]);
+		}
 		ArrayList<String> returnVar = new ArrayList<String>();
 
 		ArrayList<String> forQuery = new ArrayList<String>();
@@ -171,128 +263,71 @@ public class QueryBuilderUtility {
 		if (upperState) {
 			flworQuery = flworQuery
 					+ " for $upperStateRef in $radTrans/Radiative/RadiativeTransition[UpperStateRef=$stateID] \n";
-			/*
-			 * System.out.print(keysArray.length + " "); if
-			 * (XQueryMappingArray.containsKey("RadTransFinalStateRef")) {
-			 * XQueryMappingArray.remove("RadTransFinalStateRef"); }
-			 * System.out.println(keysArray.length + " ");
-			 */
+
 			for (int i = 0; i < keysArray.length; i++) {
 				String tempReturnable = keysArray[i].toString();
 
 				if (tempReturnable.startsWith("Atom")) {
-					String flworQueryValue = (String) XQueryMappingArray
-							.get(tempReturnable);
+					String flworQueryValue = (String) valuesArray[i].toString()
+					/*
+					 * XQueryMappingArray .get(tempReturnable)
+					 */;
 
-					if (flworQueryValue.trim().startsWith("for")) {
-						// System.out.println("for: " + flworQueryValue);
-						forQuery.add(flworQueryValue);
-					} else if (flworQueryValue.trim().startsWith("let")) {
-						// System.out.println("let: " + flworQueryValue);
-						letQuery.add(flworQueryValue);
-					}
+					parseFlworQuery(flworQueryValue, forQuery, letQuery,
+							returnVar);
 
-					int index = flworQueryValue.toString().indexOf("$");
-					int index2 = flworQueryValue.toString().indexOf(" ", index);
-
-					returnVar.add(flworQueryValue.toString().substring(index,
-							index2));
 				} else if (tempReturnable.startsWith("RadTrans")) {
 
 					if (tempReturnable
 							.equalsIgnoreCase("RadTransFinalStateRef")) {
 						// do nothing
 					} else {
+						// HashMap valuesArray order can be different from
+						// keysArray order
+						// best thing is to use
+						// XQueryMappingArray.get(tempReturnable)
+						// which due to some reasons is not working
+						// not applicable to ArrayList which retains the order
+
 						String flworQueryValue = valuesArray[i].toString(); // XQueryMappingArray.get(tempReturnable);
 
-						// System.out.print(tempReturnable + " " +
-						// XQueryMappingArray.containsKey(tempReturnable) + " "
-						// );
-						// System.out.println(flworQueryValue);
-
+						// This to " let $speciesID := $xsams/Isotope/Ion/@speciesID "
+						// turned into " let $speciesID := $upperStateRef/*/@speciesID "
 						String tempUpdatedQuery = getUpdatedRadTransQuery(
 								flworQueryValue, " $upperStateRef/*");
-						if (tempUpdatedQuery.trim().startsWith("for")) {
-							// System.out.println("for: " + tempUpdatedQuery);
-							forQuery.add(tempUpdatedQuery);
-						} else if (tempUpdatedQuery.trim().startsWith("let")) {
-							// System.out.println("let: " + tempUpdatedQuery);
-							letQuery.add(tempUpdatedQuery);
-
-						}
-						// flworQuery = flworQuery +
-						// getUpdatedRadTransQuery(flworQueryValue,
-						// " $upperStateRef/*");
-
-						int index = flworQueryValue.toString().indexOf("$");
-						int index2 = flworQueryValue.toString().indexOf(" ",
-								index);
-
-						returnVar.add(flworQueryValue.toString().substring(
-								index, index2));
+						
+						parseFlworQuery(tempUpdatedQuery, forQuery, letQuery,
+								returnVar);
 					}
 				}
 			}
-
 		} else if (!upperState) {
 			flworQuery = flworQuery
 					+ " for $lowerStateRef in $radTrans/Radiative/RadiativeTransition[LowerStateRef=$stateID] \n";
-			/*
-			 * System.out.print(keysArray.length + " "); if
-			 * (XQueryMappingArray.containsKey("RadTransInitialStateRef")) {
-			 * XQueryMappingArray.remove("RadTransInitialStateRef");
-			 * System.out.println(keysArray.length + " "); }
-			 */
 
 			for (int i = 0; i < keysArray.length; i++) {
 				String tempReturnable = keysArray[i].toString();
 
 				if (tempReturnable.startsWith("Atom")) {
-					String flworQueryValue = (String) XQueryMappingArray
-							.get(tempReturnable);
+					String flworQueryValue = (String) valuesArray[i].toString();
 
-					if (flworQueryValue.trim().startsWith("for")) {
-						System.out.println("for: " + flworQueryValue);
-						forQuery.add(flworQueryValue);
-					} else if (flworQueryValue.trim().startsWith("let")) {
-						System.out.println("let: " + flworQueryValue);
-						letQuery.add(flworQueryValue);
+					parseFlworQuery(flworQueryValue, forQuery, letQuery,
+							returnVar);
 
-					}
-
-					int index = flworQueryValue.toString().indexOf("$");
-					int index2 = flworQueryValue.toString().indexOf(" ", index);
-
-					returnVar.add(flworQueryValue.toString().substring(index,
-							index2));
 				} else if (tempReturnable.startsWith("RadTrans")) {
 					if (tempReturnable
 							.equalsIgnoreCase("RadTransInitialStateRef")) {
 						// do nothing
 					} else {
-						String flworQueryValue = valuesArray[i].toString(); // XQueryMappingArray.get(tempReturnable);
-						// System.out.print(tempReturnable + " " );
-						// System.out.println(flworQueryValue);
-
+						String flworQueryValue = valuesArray[i].toString(); 					
+						
+						// This is to " let $speciesID := $xsams/Isotope/Ion/@speciesID "
+						// turned into " let $speciesID := $lowerStateRef/*/@speciesID "
 						String tempUpdatedQuery = getUpdatedRadTransQuery(
 								flworQueryValue, " $lowerStateRef/*");
-
-						if (tempUpdatedQuery.trim().startsWith("for")) {
-							forQuery.add(tempUpdatedQuery);
-						} else if (tempUpdatedQuery.trim().startsWith("let")) {
-							letQuery.add(tempUpdatedQuery);
-						}
-
-						// flworQuery = flworQuery +
-						// getUpdatedRadTransQuery(flworQueryValue,
-						// " $lowerStateRef/*");
-
-						int index = flworQueryValue.toString().indexOf("$");
-						int index2 = flworQueryValue.toString().indexOf(" ",
-								index);
-
-						returnVar.add(flworQueryValue.toString().substring(
-								index, index2));
+						
+						parseFlworQuery(tempUpdatedQuery, forQuery, letQuery,
+								returnVar);
 					}
 
 				}
@@ -316,6 +351,7 @@ public class QueryBuilderUtility {
 
 		// System.out.println("*****  " + flworQuery);
 
+		/*
 		String returnStatement = "return concat(";
 
 		// "return concat($stateID, \"\t\",  $speciesRef/../Probability/WeightedOscillatorStrength/Value, \"\t\", $speciesRef/../Probability/TransitionProbabilityA/Value )";
@@ -331,14 +367,25 @@ public class QueryBuilderUtility {
 
 		returnStatement = returnStatement + ")";
 		flworQuery = flworQuery + returnStatement;
-
+	*/
+		finalizeFlworQuery(returnVar);
 		return flworQuery;
 	}
 
-	public String atomRadiativeQueryBoth(
-			HashMap<String, String> XQueryMappingArray, String databaseName) {
-		Object[] keysArray = XQueryMappingArray.keySet().toArray();
-		Object[] valuesArray = XQueryMappingArray.values().toArray();
+	public String atomRadiativeQueryBoth(/*
+										 * HashMap<String, String>
+										 * XQueryMappingArray
+										 */ArrayList<String> returnables,
+			ArrayList<String> queries, String databaseName) {
+
+		Object[] keysArray = /* XQueryMappingArray.keySet() */returnables
+				.toArray();
+		Object[] valuesArray = /* XQueryMappingArray.values() */queries
+				.toArray();
+
+		for (int i = 0; i < keysArray.length; i++) {
+			System.out.print(keysArray[i] + "\t");
+		}
 
 		ArrayList<String> returnVar = new ArrayList<String>();
 
@@ -349,17 +396,11 @@ public class QueryBuilderUtility {
 
 		flworQuery = flworQuery + " for $xsams in collection('" + databaseName
 				+ "')/XSAMSData/Species \n";
+		
 		flworQuery = flworQuery + " for $radTrans in collection('"
 				+ databaseName
 				+ "')/XSAMSData/Processes/Radiative/RadiativeTransition \n";
 
-		if (XQueryMappingArray.containsKey("RadTransFinalStateRef")) {
-			// XQueryMappingArray.remove("RadTransFinalStateRef");
-		}
-
-		if (XQueryMappingArray.containsKey("RadTransInitialStateRef")) {
-			// XQueryMappingArray.remove("RadTransInitialStateRef");
-		}
 		flworQuery = flworQuery + " for $radTransID in $radTrans/@id \n";
 		flworQuery = flworQuery + " for $atoms in $xsams/Atoms/Atom \n";
 
@@ -373,18 +414,29 @@ public class QueryBuilderUtility {
 			String tempReturnable = keysArray[i].toString();
 
 			if (tempReturnable.startsWith("Atom")) {
-				String flworQueryValue = (String) XQueryMappingArray
-						.get(tempReturnable);
+				String flworQueryValue = (String) valuesArray[i].toString()
+				/*
+				 * XQueryMappingArray .get(tempReturnable)
+				 */;
 				if (tempReturnable.startsWith("AtomState")) {
 
+					
+					// let $upperAtomicState := $xsams/Atoms/Atom/Isotope/Ion/AtomicState[@stateID=$upperStateRef] 
 					String flworQueryValueUpper = flworQueryValue.replaceAll(
 							"\\$stateID", "\\$upperStateRef");
+					
+					// let $lowerAtomicState := $xsams/Atoms/Atom/Isotope/Ion/AtomicState[@stateID=$lowerStateRef] 
 					String flworQueryValueLower = flworQueryValue.replaceAll(
 							"\\$stateID", "\\$lowerStateRef");
 
-					String flworQueryValueUpperUpdated = getUpdatedAtomQueryNew(
+					// let $StateEnergy := $xsams/Isotope/Ion/AtomicState[@stateID=$upperStateRef]/AtomicNumericalData/StateEnergy/Value 
+					// let $StateEnergy := $upperAtomicState/AtomicNumericalData/StateEnergy/Value 		
+					String flworQueryValueUpperUpdated = getUpdatedAtomQuery(
 							flworQueryValueUpper, "$upperAtomicState");
-					String flworQueryValueLowerUpdated = getUpdatedAtomQueryNew(
+					
+					// let $StateEnergy := $xsams/Isotope/Ion/AtomicState[@stateID=$lowerStateRef]/AtomicNumericalData/StateEnergy/Value 
+					// let $StateEnergy := $lowerAtomicState/AtomicNumericalData/StateEnergy/Value 
+					String flworQueryValueLowerUpdated = getUpdatedAtomQuery(
 							flworQueryValueLower, "$lowerAtomicState");
 
 					int index = flworQueryValue.toString().indexOf("$");
@@ -393,11 +445,15 @@ public class QueryBuilderUtility {
 					String tempReturnableVar = flworQueryValue.substring(index,
 							index2);
 
-					System.out.println(tempReturnableVar);
-
+					// let $StateEnergy := $upperAtomicState/AtomicNumericalData/StateEnergy/Value 
+					// let $StateEnergyUpper := $upperAtomicState/AtomicNumericalData/StateEnergy/Value
 					flworQueryValueUpperUpdated = flworQueryValueUpperUpdated
 							.replaceAll("\\" + tempReturnableVar, "\\"
 									+ tempReturnableVar + "Upper");
+					
+
+					// let $StateEnergy := $lowerAtomicState/AtomicNumericalData/StateEnergy/Value
+					// let $StateEnergyLower := $lowerAtomicState/AtomicNumericalData/StateEnergy/Value
 					flworQueryValueLowerUpdated = flworQueryValueLowerUpdated
 							.replaceAll("\\" + tempReturnableVar, "\\"
 									+ tempReturnableVar + "Lower");
@@ -431,30 +487,19 @@ public class QueryBuilderUtility {
 				} else {
 					String flworQueryValueUpdated = "";
 					if (tempReturnable.endsWith("")) {
+						System.out.println(flworQueryValueUpdated);
 						flworQueryValueUpdated = getUpdatedRadTransQuery(
 								flworQueryValue, "$atoms/*");
+						System.out.println(flworQueryValueUpdated);
 					} else if (tempReturnable.endsWith("")) {
 
 					}
 					if (tempReturnable.endsWith("")) {
 
 					}
-
-					int index = flworQueryValue.toString().indexOf("$");
-					int index2 = flworQueryValue.toString().indexOf(" ", index);
-
-					String tempReturnableVar = flworQueryValue.substring(index,
-							index2);
-
-					if (flworQueryValueUpdated.trim().startsWith("for")) {
-						// System.out.println("for: " + flworQueryValueUpdated);
-						forQuery.add(flworQueryValueUpdated);
-					} else if (flworQueryValueUpdated.trim().startsWith("let")) {
-						// System.out.println("let: " + flworQueryValueUpdated);
-						letQuery.add(flworQueryValueUpdated);
-
-					}
-					returnVar.add(tempReturnableVar);
+					
+					parseFlworQuery(flworQueryValueUpdated, forQuery, letQuery,
+							returnVar);
 				}
 			} else if (tempReturnable.startsWith("RadTrans")) {
 				if (tempReturnable.equalsIgnoreCase("RadTransInitialStateRef")) {
@@ -469,22 +514,9 @@ public class QueryBuilderUtility {
 
 					String tempUpdatedQuery = getUpdatedRadTransQuery(
 							flworQueryValue, " $radTrans/*");
-
-					if (tempUpdatedQuery.trim().startsWith("for")) {
-						forQuery.add(tempUpdatedQuery);
-					} else if (tempUpdatedQuery.trim().startsWith("let")) {
-						letQuery.add(tempUpdatedQuery);
-					}
-
-					// flworQuery = flworQuery +
-					// getUpdatedRadTransQuery(flworQueryValue,
-					// " $lowerStateRef/*");
-
-					int index = flworQueryValue.toString().indexOf("$");
-					int index2 = flworQueryValue.toString().indexOf(" ", index);
-
-					returnVar.add(flworQueryValue.toString().substring(index,
-							index2));
+					
+					parseFlworQuery(tempUpdatedQuery, forQuery, letQuery,
+							returnVar);
 				}
 			}
 
@@ -507,6 +539,7 @@ public class QueryBuilderUtility {
 
 		// System.out.println("*****  " + flworQuery);
 
+		/*
 		String returnStatement = "return concat(";
 
 		// "return concat($stateID, \"\t\",  $speciesRef/../Probability/WeightedOscillatorStrength/Value, \"\t\", $speciesRef/../Probability/TransitionProbabilityA/Value )";
@@ -523,6 +556,10 @@ public class QueryBuilderUtility {
 
 		returnStatement = returnStatement + ")";
 		flworQuery = flworQuery + returnStatement;
+		*/
+		
+		finalizeFlworQuery(returnVar);
+		
 		return flworQuery;
 	}
 
@@ -533,29 +570,51 @@ public class QueryBuilderUtility {
 
 		if (originalValue != null) {
 
+			// Find the index of $
+			// " let $speciesID := $xsams/Isotope/Ion/@speciesID "
 			int index = originalValue.toString().indexOf("$");
+
+			// Find the index of first "space" after index of $
+			// " let $speciesID := $xsams/Isotope/Ion/@speciesID "
 			int index2 = originalValue.toString().indexOf(" ", index);
 
+			// This will return speciesID from
+			// " let $speciesID := $xsams/Isotope/Ion/@speciesID "
+			// index + 1 will not select the $ sign
 			String tempQueryVariable = originalValue.toString().substring(
 					index + 1, index2);
 
-			// int tempQueryVariableIndex =
-			// originalValue.lastIndexOf(tempQueryVariable, index2);
-
-			// Starting from the end of query to find the last Reference
+			// Starting from the end of query to find the last Reference of
+			// "speciesID"
+			// XQuery mapping is done in the way that returnable is used twice
+			// to make the overall
+			// logic simpler.
+			// " let $speciesID := $xsams/Isotope/Ion/@speciesID "
 			int tempQueryVariableIndex = originalValue.lastIndexOf(
 					tempQueryVariable, originalValue.length());
+
+			// tempQueryVariableIndex -1 will include one character just before
+			// the returnable variable i.e. @speciesID for
+			// " let $speciesID := $xsams/Isotope/Ion/@speciesID "
+			// In few cases it will be /xxxx
+			String partAfterReplacement = originalValue
+					.substring(tempQueryVariableIndex - 1);
 
 			// This to " let $speciesID := $xsams/Isotope/Ion/@speciesID "
 			// turned into " let $speciesID := $atoms/*/@speciesID "
 			// rather than " let $speciesID := $atoms/*@speciesID "
-			String partAfterReplacement = originalValue
-					.substring(tempQueryVariableIndex - 1);
-
 			if (partAfterReplacement.startsWith("@")) {
 				partAfterReplacement = "/" + partAfterReplacement;
 			}
 
+			// " let $speciesID := $xsams/Isotope/Ion/@speciesID " will be
+			// split into 2 parts 
+			// "let $speciesID := " Note use of index2 + 4
+			// index2 is the first space after $ sign
+			// and /@speciesID
+			// replacement value is inserted between two splits
+			// This to " let $speciesID := $xsams/Isotope/Ion/@speciesID "
+			// turned into " let $speciesID := $atoms/*/@speciesID "
 			updatedValue = originalValue.substring(0, index2 + 4)
 					+ replacementValue + partAfterReplacement;
 		}
@@ -576,36 +635,36 @@ public class QueryBuilderUtility {
 			if (m.find()) {
 				return true;
 			}
-
 		}
 		return false;
 	}
 
-	private String getUpdatedAtomQueryNew(String originalValue,
+	private String getUpdatedAtomQuery(String originalValue,
 			String replacementValue) {
-		// System.out.append(counter++ + "  " + originalValue);
 		String updatedValue = "";
 
 		if (originalValue != null) {
-
+			
+			// Find the index of $
 			int index = originalValue.toString().indexOf("$");
+			
+			// Find the index of first "space" after index of $
 			int index2 = originalValue.toString().indexOf(" ", index);
-
-			String tempQueryVariable = originalValue.toString().substring(
-					index + 1, index2);
-
-			// int tempQueryVariableIndex =
-			// originalValue.lastIndexOf(tempQueryVariable, index2);
 
 			// Starting from the end of query to find the last Reference
 			int tempQueryVariableIndex = originalValue.lastIndexOf("]",
 					originalValue.length());
 
+			// let $StateEnergy := $xsams/Isotope/Ion/AtomicState[@stateID=$lowerStateRef]/AtomicNumericalData/StateEnergy/Value
+			// let $StateEnergy := $lowerAtomicState/AtomicNumericalData/StateEnergy/Value
+			// originalValue.substring(0, index2 + 4) == let $StateEnergy :=
+			// replacementValue ==  $lowerAtomicState
+			// originalValue.substring(tempQueryVariableIndex + 1) == /AtomicNumericalData/StateEnergy/Value
 			updatedValue = originalValue.substring(0, index2 + 4)
 					+ replacementValue
 					+ originalValue.substring(tempQueryVariableIndex + 1);
 		}
-
 		return updatedValue;
 	}
+
 }

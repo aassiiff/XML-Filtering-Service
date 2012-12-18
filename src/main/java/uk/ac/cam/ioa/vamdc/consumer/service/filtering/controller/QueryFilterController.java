@@ -88,6 +88,9 @@ public class QueryFilterController implements Serializable {
 		return submittedQuereis;
 	}
 
+	/*
+	 * This method was called for testing from the web page
+	 */
 	public void executeQuery() {
 		log.info("executeQuery: " + queryVersion);
 		log.info("executeQuery: " + queryToExecute);
@@ -102,20 +105,29 @@ public class QueryFilterController implements Serializable {
 
 	public String executeQueryFromSelectable(
 			List<SelectedReturnable> selectedReturnablesList) {
+		
 		if(xmlDatabaseController != null){
 			System.out.println("xmlDatabaseController: " + xmlDatabaseController.toString());
 			if(xmlDatabaseController.getXmlDatabase() != null){
 				System.out.println("xmlDatabaseController.xmlDatabase");
 				if(xmlDatabaseController.getXmlDatabase() != null){
 					System.out.println("xmlDatabaseController.xmlDatabase.getDatabaseName(): " + xmlDatabaseController.getXmlDatabase().getDatabaseName());
+				} else {
+					// Should do some sort of error handling
 				}
 			}
 		} else {
 			System.out.println("xmlDatabaseController is null");
+			// Should do some sort of error handling
 		}
 		
 		/**/
-		String flworQuery =new QueryBuilderUtility().buildQuery(selectedReturnablesList, xmlDatabaseController.getXmlDatabase().getDatabaseName());
+		
+		QueryBuilderUtility qbuTemp = new QueryBuilderUtility();
+		
+		String flworQuery = qbuTemp.buildQuery(selectedReturnablesList, xmlDatabaseController.getXmlDatabase().getDatabaseName());
+		
+		String flworQueryHtml = qbuTemp.getFlworQueryHtml();
 		
 		SubmittedQuery submittedQuery = new SubmittedQuery();
 		
